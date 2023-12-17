@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  seed     = "node --loader ts-node/esm src/database/prisma/seed.ts "
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Address {
+  id         String   @id @default(cuid())
+  address    String
+  name       String?
+  userId     String?
+  createdAt  DateTime @default(now())
+  isFavorite Boolean  @default(false)
+  user       User?    @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  Addresses Address[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
