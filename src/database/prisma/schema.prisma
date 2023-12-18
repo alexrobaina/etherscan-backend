@@ -12,13 +12,15 @@ datasource db {
 }
 
 model Address {
-  id         String   @id @default(cuid())
-  address    String
-  name       String?
-  userId     String?
-  createdAt  DateTime @default(now())
-  isFavorite Boolean  @default(false)
-  user       User?    @relation(fields: [userId], references: [id])
+  id                 String            @id @default(cuid())
+  address            String
+  name               String?
+  userId             String?
+  createdAt          DateTime          @default(now())
+  isFavorite         Boolean           @default(false)
+  isOlderThanOnaYear Boolean           @default(false)
+  user               User?             @relation(fields: [userId], references: [id])
+  EthExchangeRate    EthExchangeRate[]
 }
 
 model User {
@@ -27,4 +29,14 @@ model User {
   Addresses Address[]
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model EthExchangeRate {
+  id           String   @id @default(cuid())
+  addressId    String
+  amount       Int?
+  currency     String?
+  exchangeRate Float?
+  createdAt    DateTime @default(now())
+  Address      Address? @relation(fields: [addressId], references: [id])
 }

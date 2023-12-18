@@ -3,8 +3,18 @@ import { SOMETHING_IS_WRONG, SUCCESS_RESPONSE } from '../../constants/constants'
 import { prisma } from '../../database/prisma'
 
 export const update = async (req: Request, res: Response) => {
+  // clean body, remove id and files are ''
+  Object.keys(req.body).forEach((key) => {
+    if (req.body[key] === '') {
+      delete req.body[key]
+    }
+  })
+
   try {
     await prisma.address.updateMany({
+      where: {
+        id: req.body.id,
+      },
       data: req.body,
     })
 

@@ -5,7 +5,6 @@ import { prisma } from '../../database/prisma'
 export const deleteAddress = async (req: Request, res: Response) => {
   try {
     const { id } = req?.params as any
-    console.log(id)
 
     const address = await prisma.address.findUnique({
       where: { id: id as string },
