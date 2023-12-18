@@ -12,7 +12,7 @@ const router = express.Router()
 
 router.post('/address', [verifyToken], create)
 
-router.get('/address/:id', getAddress)
+router.get('/address/:address', [verifyToken], getAddress)
 
 router.get('/address', [verifyToken], getAddresses)
 router.put('/address', [verifyToken], update)

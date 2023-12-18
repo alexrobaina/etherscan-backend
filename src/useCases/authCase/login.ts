@@ -44,3 +44,32 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const checkIsLoading = async (req: Request, res: Response) => {
+  try {
+    if (req?.user) {
+      const token = await createToken({
+        // @ts-ignore
+        id: req.user.id,
+        // @ts-ignore
+        email: req.user.email,
+      })
+
+      return res.status(200).json({
+        token,
+        ok: true,
+        user: req?.user,
+        message: 'User logged in',
+      })
+    }
+  } catch (error) {
+    console.log(error)
+
+    return res.status(500).json({
+      code: 4,
+      ok: false,
+      error: Error,
+      message: SOMETHING_IS_WRONG,
+    })
+  }
+}

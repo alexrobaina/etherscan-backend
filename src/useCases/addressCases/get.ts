@@ -2,6 +2,7 @@ import { SOMETHING_IS_WRONG, SUCCESS_RESPONSE } from '../../constants/constants'
 import { Request, Response } from 'express'
 
 import { prisma } from '../../database/prisma'
+import { getAddressBalance } from '../../services/getBalance'
 
 export const getAddresses = async (req: Request, res: Response) => {
   const filter = req.query as {
@@ -18,14 +19,19 @@ export const getAddresses = async (req: Request, res: Response) => {
   const take = itemsPerPage
 
   const query: any = {
-    where: {},
-    orderBy: { createdAt: 'desc' },
+    where: {
+      // @ts-ignore
+      userId: req?.user?.id,
+    },
+    orderBy: { isFavorite: 'desc' },
     skip,
     take,
     select: {
       name: true,
       address: true,
       id: true,
+      isFavorite: true,
+      isOlderThanOnaYear: true,
     },
   }
 
@@ -61,22 +67,34 @@ export const getAddresses = async (req: Request, res: Response) => {
 }
 
 export const getAddress = async (req: Request, res: Response) => {
-  const address = await prisma.address.findUnique({
+  const { address: addressParams } = req.params
+
+  const address = await prisma.address.findFirst({
     where: {
-      id: req.params.id as string,
+      address: addressParams as string,
+      // @ts-ignore
+      userId: req?.user?.id,
     },
     select: {
       id: true,
       name: true,
       address: true,
+      isFavorite: true,
+      isOlderThanOnaYear: true,
     },
   })
 
+  const addressBalance = await getAddressBalance(addressParams as string)
   try {
     res.status(200).json({
-      address,
       ok: true,
+      addressBalance,
+      // @ts-ignore
+      addressId: address.id,
+      address: address?.address,
       message: SUCCESS_RESPONSE,
+      // @ts-ignore
+      isOlderThanOnaYear: address.isOlderThanOnaYear,
     })
   } catch (error) {
     console.log(error)
