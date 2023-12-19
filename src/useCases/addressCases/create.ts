@@ -6,8 +6,10 @@ import { checkIfAddressIsOlderThanOneYear } from '../../services/checkIfAddressI
 export const create = async (req: Request, res: Response) => {
   try {
     const isOld = await checkIfAddressIsOlderThanOneYear(req.body.address)
+
     const address = await prisma.address.create({
-      data: { ...req.body, isOlderThanOnaYear: isOld },
+      // @ts-ignore
+      data: { ...req.body, isOlderThanOnaYear: isOld, userId: req.user.id },
     })
 
     res.status(201).json({
